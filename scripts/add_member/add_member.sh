@@ -75,24 +75,25 @@ function add_user_to_youtrack()
     youtrack_uri="https://youtrack.envronment.com"
     youtrack_invite_uri="$youtrack_uri/hub/api/rest/users/invite"
     youtrack_add_group_uri="$youtrack_uri/hub/api/rest/usergroups/e9926957-ba47-4e1c-b902-8e61b9dfe2b4/users"
-    
-    echo "Adding $epitech_email to Youtrack"
-    # TODO: Treat the response and keep the user id to add it to the group
-    curl -L -X "$youtrack_invite_uri?email=$epitech_email&fields=id%2Clogin&userType=STANDARD_USER&failOnPermissionReduce=true" \
-    --header "Authorization: $youtrack_token" \
-    --data ""
 
-    # Copilot write that:
-    # user_id=$(echo $res | jq -r '.id') 
+    echo "Adding $epitech_email to Youtrack"
+    res=$(curl -X POST -L "$youtrack_invite_uri?email=$epitech_email&fields=id%2Clogin&userType=STANDARD_USER&failOnPermissionReduce=true" \
+    -H "Authorization: Bearer $youtrack_token")
+    echo $res
+
+    user_id=$(echo $res | jq -r '.[0].id')
+    echo $user_id
+
+    if [ -z "$user_id" ] || [ "$user_id" == "null" ]; then
+        echo "Error while inviting user to Youtrack"
+        exit 1
+    fi
 
     echo "User invited to Youtrack"
-    # TODO: Treat the response in case of error
-    curl -L -X "$youtrack_add_group_uri?failOnPermissionReduce=true&fields=login%2Cguest%2CcreationTime%2ClastAccessTime" \
-    --header "Content-Type: application/json" \
-    --header "Authorization: $youtrack_token" \
-    --data "{
-        "id": "$user_id"
-    }"
+    curl -X POST -L "$youtrack_add_group_uri?failOnPermissionReduce=true&fields=login%2Cguest%2CcreationTime%2ClastAccessTime" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $youtrack_token" \
+    -d "{\"id\": \"$user_id\"}"
 }
 
 
