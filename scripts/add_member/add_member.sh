@@ -46,6 +46,7 @@ firstname=$(echo $epitech_email | cut -d'.' -f1) # Firstname
 firstname=${firstname^} # Capitalize the first letter
 lastname=$(echo $epitech_email | cut -d'.' -f2) # Lastname
 lastname=${lastname^} # Capitalize the first letter
+fullname="$firstname $lastname"
 
 ##############################
 #                            #
@@ -73,11 +74,11 @@ function add_user_to_youtrack()
     fi
 
     youtrack_uri="https://youtrack.envronment.com"
-    youtrack_invite_uri="$youtrack_uri/hub/api/rest/users/invite"
-    youtrack_add_group_uri="$youtrack_uri/hub/api/rest/usergroups/e9926957-ba47-4e1c-b902-8e61b9dfe2b4/users"
+    youtrack_users_uri="$youtrack_uri/hub/api/rest/users"
+    youtrack_eip_group_uri="$youtrack_uri/hub/api/rest/usergroups/e9926957-ba47-4e1c-b902-8e61b9dfe2b4/users"
 
     echo "Adding $epitech_email to Youtrack"
-    res=$(curl -X POST -L "$youtrack_invite_uri?email=$epitech_email&fields=id%2Clogin&userType=STANDARD_USER&failOnPermissionReduce=true" \
+    res=$(curl -X POST -L "$youtrack_users_uri/invite?email=$epitech_email&fields=id%2Clogin&userType=STANDARD_USER&failOnPermissionReduce=true" \
     -H "Authorization: Bearer $youtrack_token")
     echo $res
 
@@ -89,8 +90,14 @@ function add_user_to_youtrack()
         exit 1
     fi
 
-    echo "User invited to Youtrack"
-    curl -X POST -L "$youtrack_add_group_uri?failOnPermissionReduce=true&fields=login%2Cguest%2CcreationTime%2ClastAccessTime" \
+    echo "Rename $username with $fullname"
+    curl -X POST -L "$youtrack_users_uri/$user_id?fields=id%2Clogin%2Cname%2Cprofile" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $youtrack_token" \
+    -d "{ \"name\": \"$fullname\" }"
+
+    echo "Add $epitech_email ($user_id) to EIP group"
+    curl -X POST -L "$youtrack_eip_group_uri?failOnPermissionReduce=true&fields=login%2Cguest%2CcreationTime%2ClastAccessTime" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $youtrack_token" \
     -d "{\"id\": \"$user_id\"}"
