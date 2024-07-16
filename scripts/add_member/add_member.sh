@@ -22,18 +22,30 @@ gitea_token="$GITEA_TOKEN"
 lucidchart_token="$LUCIDCHART_TOKEN"
 coolify_token="$COOLIFY_TOKEN"
 
-username=$(echo $epitech_email | cut -d'@' -f1) # Username for pld, youtrack
-firstname=$(echo $epitech_email | cut -d'.' -f1) # Firstname
-firstname=${firstname^} # Capitalize the first letter
-lastname=$(echo $epitech_email | cut -d'.' -f2) # Lastname
-lastname=${lastname^} # Capitalize the first letter
-
 # Get epitech epitech email
 
 if [ -z "$epitech_email" ]; then
     echo -n "Enter the epitech email of the user you want to add to the organization: "
     read epitech_email
 fi
+
+epitech_email=$(echo $epitech_email | tr '[:upper:]' '[:lower:]') # Lowercase the email
+
+# check if @ is in the email, if not add it
+if [[ ! $epitech_email == *"@"* ]]; then
+    epitech_email="$epitech_email@epitech.eu"
+fi
+
+if [[ ! $epitech_email =~ ^[a-zA-Z0-9._%+-]+@epitech\.eu$ ]]; then
+    echo "Invalid email"
+    exit 1
+fi
+
+username=$(echo $epitech_email | cut -d'@' -f1) # Username for pld, youtrack
+firstname=$(echo $epitech_email | cut -d'.' -f1) # Firstname
+firstname=${firstname^} # Capitalize the first letter
+lastname=$(echo $epitech_email | cut -d'.' -f2) # Lastname
+lastname=${lastname^} # Capitalize the first letter
 
 ##############################
 #                            #
@@ -143,6 +155,13 @@ function main()
     functionChoosen="$1"
 
     if [ -n "$functionChoosen" ]; then
+        functionChoosen="add_user_to_$functionChoosen"
+
+        if [[ ! " ${functions[@]} " =~ " ${functionChoosen} " ]]; then
+            echo "Invalid function"
+            exit 1
+        fi
+
         $functionChoosen
         return
     fi
