@@ -78,7 +78,7 @@ function add_user_to_youtrack()
     youtrack_eip_group_uri="$youtrack_uri/hub/api/rest/usergroups/e9926957-ba47-4e1c-b902-8e61b9dfe2b4/users"
 
     echo "Adding $epitech_email to Youtrack"
-    res=$(curl -X POST -L "$youtrack_users_uri/invite?email=$epitech_email&fields=id%2Clogin&userType=STANDARD_USER&failOnPermissionReduce=true" \
+    res=$(curl -s -X POST -L "$youtrack_users_uri/invite?email=$epitech_email&fields=id%2Clogin&userType=STANDARD_USER&failOnPermissionReduce=true" \
     -H "Authorization: Bearer $youtrack_token")
     echo $res
 
@@ -91,18 +91,17 @@ function add_user_to_youtrack()
     fi
 
     echo "Rename $username with $fullname"
-    curl -X POST -L "$youtrack_users_uri/$user_id?fields=id%2Clogin%2Cname%2Cprofile" \
+    curl -s -X POST -L "$youtrack_users_uri/$user_id?fields=id%2Clogin%2Cname%2Cprofile" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $youtrack_token" \
     -d "{ \"name\": \"$fullname\" }"
 
     echo "Add $epitech_email ($user_id) to EIP group"
-    curl -X POST -L "$youtrack_eip_group_uri?failOnPermissionReduce=true&fields=login%2Cguest%2CcreationTime%2ClastAccessTime" \
+    curl -s -X POST -L "$youtrack_eip_group_uri?failOnPermissionReduce=true&fields=login%2Cguest%2CcreationTime%2ClastAccessTime" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $youtrack_token" \
     -d "{\"id\": \"$user_id\"}"
 }
-
 
 function add_user_to_mailcow()
 {
@@ -110,14 +109,23 @@ function add_user_to_mailcow()
         echo -n "Enter the mailcow token: "
         read mailcow_token
     fi
-}
 
-function add_user_to_infisical()
-{
-    if [ -z "$infisical_token" ]; then
-        echo -n "Enter the infisical token: "
-        read infisical_token
-    fi
+    echo "Creating mailbox for "$username" with password "$username""
+    curl -L -X POST 'https://mail.envronment.com/api/v1/add/mailbox' \
+    -H "Content-Type: application/json" \
+    -H "X-API-Key: $mailcow_token" \
+    -d "{
+    \"local_part\": \"$username\",
+    \"domain\": \"envronment.com\",
+    \"name\": \"$fullname\",
+    \"quota\": \"2048\",
+    \"password\": \"$username\",
+    \"password2\": \"$username\",
+    \"active\": \"1\",
+    \"force_pw_update\": true,
+    \"tls_enforce_in\": true,
+    \"tls_enforce_out\": true
+    }"
 }
 
 function add_user_to_figma()
@@ -144,14 +152,6 @@ function add_user_to_gitea()
     fi
 }
 
-function add_user_to_coolify()
-{
-    if [ -z "$coolify_token" ]; then
-        echo -n "Enter the coolify token: "
-        read coolify_token
-    fi
-}
-
 function add_user_to_jsreport()
 {
     # Get jsreport admin account
@@ -165,7 +165,8 @@ function add_user_to_jsreport()
         read -s jsreport_password
     fi
 
-    jsreport_token=$(echo -n "$jsreport_username:$jsreport_password" | base64)
+    local jsreport_url="http://localhost:5488/"
+    local jsreport_token=$(echo -n "$jsreport_username:$jsreport_password" | base64)
 }
 
 function main()
@@ -174,11 +175,9 @@ function main()
         add_user_to_github
         add_user_to_youtrack
         add_user_to_mailcow
-        add_user_to_infisical
         add_user_to_figma
         add_user_to_lucidchart
         add_user_to_gitea
-        add_user_to_coolify
         add_user_to_jsreport
     )
 
