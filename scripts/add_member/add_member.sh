@@ -115,16 +115,16 @@ function add_user_to_mailcow()
     -H "Content-Type: application/json" \
     -H "X-API-Key: $mailcow_token" \
     -d "{
-    \"local_part\": \"$username\",
-    \"domain\": \"envronment.com\",
-    \"name\": \"$fullname\",
-    \"quota\": \"2048\",
-    \"password\": \"$username\",
-    \"password2\": \"$username\",
-    \"active\": \"1\",
-    \"force_pw_update\": true,
-    \"tls_enforce_in\": true,
-    \"tls_enforce_out\": true
+        \"local_part\": \"$username\",
+        \"domain\": \"envronment.com\",
+        \"name\": \"$fullname\",
+        \"quota\": \"2048\",
+        \"password\": \"$username\",
+        \"password2\": \"$username\",
+        \"active\": true,
+        \"force_pw_update\": true,
+        \"tls_enforce_in\": true,
+        \"tls_enforce_out\": true
     }"
 }
 
