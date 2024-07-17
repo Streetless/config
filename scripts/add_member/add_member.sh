@@ -128,22 +128,6 @@ function add_user_to_mailcow()
     }"
 }
 
-function add_user_to_figma()
-{
-    if [ -z "$figma_token" ]; then
-        echo -n "Enter the figma token: "
-        read figma_token
-    fi
-}
-
-function add_user_to_lucidchart()
-{
-    if [ -z "$lucidchart_token" ]; then
-        echo -n "Enter the lucidchart token: "
-        read lucidchart_token
-    fi
-}
-
 function add_user_to_gitea()
 {
     if [ -z "$gitea_token" ]; then
@@ -175,8 +159,6 @@ function main()
         add_user_to_github
         add_user_to_youtrack
         add_user_to_mailcow
-        add_user_to_figma
-        add_user_to_lucidchart
         add_user_to_gitea
         add_user_to_jsreport
     )
