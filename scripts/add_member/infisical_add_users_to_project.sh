@@ -87,7 +87,6 @@ function add_user_to_project()
         read infisical_token
     fi
 
-    local infisical_uri="https://infisical.envronment.com"
     local infisical_orga_projects_uri="$infisical_uri/api/v2/organizations/$org_id/workspaces"
 
     local res=$(curl -s "$infisical_orga_projects_uri" -H "Authorization: Bearer $infisical_token")
