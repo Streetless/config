@@ -28,7 +28,7 @@ function format_emails()
     done
 }
 
-function listOfUserToBeAddedToProject()
+function list_of_user_to_be_added_to_projects()
 {
     echo "List of user to be added to the project:"
     for email in "${user_emails[@]}"; do
@@ -49,17 +49,17 @@ function add_user_to_project()
 
     local res=$(curl -s "$infisical_orga_projects_uri" -H "Authorization: Bearer $infisical_token")
 
-    local project_Ids=($(echo $res | jq -r '.[] | .[] | .id'))
-    local project_Names=($(echo $res | jq -r '.[] | .[] | .name' | tr ' ' '_'))
+    local project_ids=($(echo $res | jq -r '.[] | .[] | .id'))
+    local project_names=($(echo $res | jq -r '.[] | .[] | .name' | tr ' ' '_'))
 
-    for i in ${!project_Ids[@]}; do
-        if [[ " ${blacklisted_projects[@]} " =~ " ${project_Names[$i]} " ]]; then
+    for i in ${!project_ids[@]}; do
+        if [[ " ${blacklisted_projects[@]} " =~ " ${project_names[$i]} " ]]; then
             continue
         fi
 
-        echo "Project ${project_Names[$i]} (${project_Ids[$i]}):"
+        echo "Project ${project_names[$i]} (${project_ids[$i]}):"
 
-        local infisical_project_members_uri="$infisical_uri/api/v2/workspace/${project_Ids[$i]}/memberships"
+        local infisical_project_members_uri="$infisical_uri/api/v2/workspace/${project_ids[$i]}/memberships"
         curl -s -L -X POST "$infisical_project_members_uri" \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer $infisical_token" \
@@ -71,5 +71,5 @@ function add_user_to_project()
 }
 
 format_emails
-listOfUserToBeAddedToProject
+list_of_user_to_be_added_to_projects
 add_user_to_project
