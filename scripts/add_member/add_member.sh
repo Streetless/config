@@ -189,13 +189,20 @@ function add_user_to_jsreport()
     }"
 }
 
+function add_user_to_pld()
+{
+    # TODO: sql request
+    echo todo
+}
+
 function main()
 {
     local functions=(
         add_user_to_github
         add_user_to_youtrack
         add_user_to_mailcow
-        add_user_to_gitea
+        # add_user_to_pld
+        # add_user_to_gitea
         add_user_to_jsreport
     )
 
