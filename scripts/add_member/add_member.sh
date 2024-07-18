@@ -165,6 +165,19 @@ function add_user_to_jsreport()
     }")
     local user_id=$(echo $res | jq -r '.shortid')
 
+    echo "Fetching user inside main group"
+    local res=$(curl -s -L -X GET "$jsreport_url/odata/usersGroups('$jsreport_main_group_id')" \
+    -H "Content-Type: application/json;odata.metadata=minimal" \
+    -H "Authorization: Basic $jsreport_token" \
+    -H "OData-Version: 4.0" \
+    )
+    local users=$(echo $res | jq -r '.users | .[] | .shortid')
+    local usersJson=("{\"shortid\": \"$user_id\"}")
+
+    for user in $users; do
+        usersJson+=",{\"shortid\": \"$user\"}"
+    done
+
     echo "Adding $username to the main group"
     curl -s -L -X PATCH "$jsreport_url/odata/usersGroups('$jsreport_main_group_id')" \
     -H "Content-Type: application/json;odata.metadata=minimal" \
@@ -172,7 +185,7 @@ function add_user_to_jsreport()
     -H "OData-Version: 4.0" \
     -d "{
         \"@odata.type\": \"jsreport.UsersGroupType\",
-        \"users\": [{ \"shortid\": \"$user_id\" }]
+        \"users\": [$usersJson]
     }"
 }
 
