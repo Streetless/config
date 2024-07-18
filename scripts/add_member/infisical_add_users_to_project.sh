@@ -2,6 +2,12 @@
 
 # Personal access token for infisical
 infisical_token="$INFISICAL_TOKEN"
+
+if [ -z "$infisical_token" ]; then
+    echo -n "Enter the infisical token: "
+    read infisical_token
+fi
+
 # Email list of accepted users.
 user_emails=(
     "hugo.baret@epitech.eu"
@@ -14,7 +20,7 @@ user_emails=(
     "jonathan.albac@epitech.eu"
 )
 # List of project names to blacklist (case sensitive but replace space with '_')
-blacklisted_projects=() # Example: ("API" "Landing_Page")
+blacklisted_projects=("GitHub") # Example: ("API" "Landing_Page")
 
 # Do not edit below this line, unless you know what you are doing
 emails=""

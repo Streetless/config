@@ -16,10 +16,7 @@ jsreport_password="$JSREPORT_PASSWORD"
 
 youtrack_token="$YOUTRACK_TOKEN"
 mailcow_token="$MAILCOW_TOKEN"
-infisical_token="$INFISICAL_TOKEN"
-figma_token="$FIGMA_TOKEN"
 gitea_token="$GITEA_TOKEN"
-lucidchart_token="$LUCIDCHART_TOKEN"
 coolify_token="$COOLIFY_TOKEN"
 
 # Get epitech epitech email
