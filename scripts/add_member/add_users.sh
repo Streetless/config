@@ -16,6 +16,6 @@ user_emails=(
 for email in "${user_emails[@]}"; do
     echo "Adding $email to the project tools"
 
-    export EPITECH_EMAIL="$$email"
+    export EPITECH_EMAIL="$email"
     ./add_member.sh jsreport
 done
