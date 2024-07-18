@@ -148,16 +148,31 @@ function add_user_to_jsreport()
 
     local jsreport_url="http://localhost:5488"
     local jsreport_token=$(echo -n "$jsreport_username:$jsreport_password" | base64)
+    local jsreport_users_folder_shortid="Szy_lwf"
+    local jsreport_main_group_id="mGO6A6U7I6jWGyAV"
 
-    curl -L -X POST "$jsreport_url/odata/users" \
+    echo "Creating user $username in jsreport with password $username"
+    local res=$(curl -s -L -X POST "$jsreport_url/odata/users" \
     -H "Content-Type: application/json;odata.metadata=minimal" \
     -H "Authorization: Basic $jsreport_token" \
     -H "OData-Version: 4.0" \
     -d "{
         \"@odata.type\": \"jsreport.UserType\",
-        \"name\": \"$fullname\",
+        \"name\": \"$username\",
         \"username\": \"$username\",
-        \"password\": \"$username\"
+        \"password\": \"$username\",
+        \"folder\": { \"shortid\": \"$jsreport_users_folder_shortid\" }
+    }")
+    local user_id=$(echo $res | jq -r '.shortid')
+
+    echo "Adding $username to the main group"
+    curl -s -L -X PATCH "$jsreport_url/odata/usersGroups('$jsreport_main_group_id')" \
+    -H "Content-Type: application/json;odata.metadata=minimal" \
+    -H "Authorization: Basic $jsreport_token" \
+    -H "OData-Version: 4.0" \
+    -d "{
+        \"@odata.type\": \"jsreport.UsersGroupType\",
+        \"users\": [{ \"shortid\": \"$user_id\" }]
     }"
 }
 
