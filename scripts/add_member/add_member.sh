@@ -38,10 +38,10 @@ if [[ ! $epitech_email =~ ^[a-zA-Z0-9._%+-]+@epitech\.eu$ ]]; then
     exit 1
 fi
 
-username=$(echo $epitech_email | cut -d'@' -f1) # Username for pld, youtrack
-firstname=$(echo $epitech_email | cut -d'.' -f1) # Firstname
+username=$(echo $epitech_email | cut -d '@' -f1) # Username for pld, youtrack
+firstname=$(echo $epitech_email | cut -d '.' -f1) # Firstname
 firstname=${firstname^} # Capitalize the first letter
-lastname=$(echo $epitech_email | cut -d'.' -f2) # Lastname
+lastname=$(echo $epitech_email | cut -d '@' -f1 | cut -d '.' -f2) # Lastname
 lastname=${lastname^} # Capitalize the first letter
 fullname="$firstname $lastname"
 
@@ -146,8 +146,19 @@ function add_user_to_jsreport()
         read -s jsreport_password
     fi
 
-    local jsreport_url="http://localhost:5488/"
+    local jsreport_url="http://localhost:5488"
     local jsreport_token=$(echo -n "$jsreport_username:$jsreport_password" | base64)
+
+    curl -L -X POST "$jsreport_url/odata/users" \
+    -H "Content-Type: application/json;odata.metadata=minimal" \
+    -H "Authorization: Basic $jsreport_token" \
+    -H "OData-Version: 4.0" \
+    -d "{
+        \"@odata.type\": \"jsreport.UserType\",
+        \"name\": \"$fullname\",
+        \"username\": \"$username\",
+        \"password\": \"$username\"
+    }"
 }
 
 function main()
